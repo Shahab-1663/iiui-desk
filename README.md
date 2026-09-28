@@ -1,11 +1,11 @@
 # IIUI Student Desk
 
-An IIUI-inspired student resource library for finding and sharing course materials. The app is built with Next.js App Router, React, TypeScript, Tailwind CSS, Motion, Neon Postgres, Drizzle ORM, Better Auth, and private Vercel Blob storage.
+An IIUI-inspired student resource library for finding and sharing course materials. The app is built with Next.js App Router, React, TypeScript, Tailwind CSS, Motion, PostgreSQL, Drizzle ORM, Better Auth, and private Vercel Blob storage.
 
 ## Requirements
 
 - Node.js 20.9 or newer
-- A Neon Postgres database
+- A PostgreSQL database, such as Prisma Postgres provisioned through the Vercel Marketplace
 - A Vercel Blob private store for file uploads
 
 ## Local setup
@@ -29,5 +29,5 @@ The faculty directory follows the official IIUI faculties listing. Course record
 
 ## Deployment
 
-Deploy the project root as a Next.js app on Vercel. Configure the variables from `.env.example` in the Vercel project, provision a Neon database and a private Blob store, then run the database migration against the production database. Never commit `.env.local` or provider tokens.
+Deploy the project root as a Next.js app on Vercel. Provision Prisma Postgres from the Vercel Marketplace and connect it to the project; the integration provides `DATABASE_URL`. Run the database migration against that database, create a private Blob store, and configure the remaining variables from `.env.example`. Never commit `.env.local` or provider tokens.
 

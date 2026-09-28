@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Resource review" };
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  if (!process.env.DATABASE_URL || !process.env.BETTER_AUTH_SECRET) return <section className="page-hero"><div className="eyebrow"><span className="eyebrow-line" /> MODERATION DESK</div><h1>Resource <em>review.</em></h1><p>Connect Neon and set an admin email in the environment to open the review queue.</p></section>;
+  if (!process.env.DATABASE_URL || !process.env.BETTER_AUTH_SECRET) return <section className="page-hero"><div className="eyebrow"><span className="eyebrow-line" /> MODERATION DESK</div><h1>Resource <em>review.</em></h1><p>Connect PostgreSQL and set an admin email in the environment to open the review queue.</p></section>;
   const session = await getAuth().api.getSession({ headers: await headers() });
   const admins = (process.env.ADMIN_EMAILS ?? "").split(",").map((email) => email.trim().toLowerCase()).filter(Boolean);
   if (!session) return <section className="page-hero"><div className="eyebrow"><span className="eyebrow-line" /> MODERATION DESK</div><h1>Sign in to<br /><em>review resources.</em></h1><p><Link className="official-link" href="/auth/sign-in">Sign in to continue ↗</Link></p></section>;
