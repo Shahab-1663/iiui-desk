@@ -20,4 +20,3 @@ export async function POST(request: Request) {
     return Response.json({ error: "We could not save your message. Please try again." }, { status: 500 });
   }
 }
-

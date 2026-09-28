@@ -7,4 +7,3 @@ export async function GET(request: Request) {
   if (!getFaculty(faculty)) return Response.json({ error: "Choose a valid IIUI faculty." }, { status: 400 });
   return Response.json({ degrees: await getFacultyDegrees(faculty) }, { headers: { "Cache-Control": "no-store" } });
 }
-

@@ -105,4 +105,3 @@ export function UploadForm({ initialFaculty }: { initialFaculty?: string }) {
     <p className="form-note">Files use private Vercel Blob storage. Approved materials are available to signed-in students.</p>
   </form>;
 }
-

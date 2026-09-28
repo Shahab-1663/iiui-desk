@@ -10,4 +10,3 @@ export default function ContactPage() {
     <section className="contact-layout"><div className="contact-intro"><span className="strip-kicker">A NOTE TO THE DESK</span><h2>Help us make this<br />space <em>better.</em></h2><p>Student Desk is a work in progress. Tell us what would help you find the right material, or let us know when something needs a second look.</p><div className="contact-detail"><span>✉</span><div><strong>Reach the project team</strong><small>Your note goes to the desk inbox.</small></div></div><a className="official-link" href="https://www.iiu.edu.pk/" target="_blank" rel="noreferrer">Visit the official IIUI website <ExternalLink size={12} /></a></div><ContactForm /></section>
   </>;
 }
-

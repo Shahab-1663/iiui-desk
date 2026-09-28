@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, Plus, X } from "lucide-react";
+import { Menu, Plus, X, Wrench } from "lucide-react";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
@@ -11,7 +11,7 @@ const links = [
   { href: "/", label: "Discover" },
   { href: "/faculties", label: "Faculties" },
   { href: "/resources", label: "Resources" },
-  { href: "/about", label: "About" },
+  { href: "/tools", label: "Student tools" },
 ];
 
 export function SiteHeader() {
@@ -39,7 +39,6 @@ export function SiteHeader() {
 
 function AuthActions({ closeMenu }: { closeMenu: () => void }) {
   const { data: session } = authClient.useSession();
-  if (session?.user) return <button className="nav-signin" onClick={() => void authClient.signOut()} type="button">Sign out</button>;
+  if (session?.user) return <><Link className="nav-link admin-nav" href="/admin" onClick={closeMenu}><Wrench size={13} /> Desk admin</Link><button className="nav-signin" onClick={() => void authClient.signOut()} type="button">Sign out</button></>;
   return <Link className="nav-signin" href="/auth/sign-in" onClick={closeMenu}>Sign in <span aria-hidden="true">↗</span></Link>;
 }
-

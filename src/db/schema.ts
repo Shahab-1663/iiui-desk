@@ -120,4 +120,3 @@ export const contactMessages = pgTable("contact_message", {
   message: text("message").notNull(),
   ...timestamps,
 }, (table) => [index("contact_message_created_idx").on(table.createdAt)]);
-

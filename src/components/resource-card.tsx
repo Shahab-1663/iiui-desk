@@ -26,4 +26,3 @@ export function ResourceCard({ resource }: { resource: ResourceItem }) {
     </article>
   );
 }
-

@@ -70,4 +70,3 @@ export async function getApprovedResourceCount() {
     .from(resources).where(eq(resources.status, "approved"));
   return row?.count ?? 0;
 }
-

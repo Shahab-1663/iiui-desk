@@ -26,4 +26,3 @@ export function getAuth() {
 
   return authInstance;
 }
-

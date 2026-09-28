@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import Link from "next/link";
 import { DM_Sans, Playfair_Display } from "next/font/google";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
@@ -10,10 +9,10 @@ const serif = Playfair_Display({ subsets: ["latin"], variable: "--font-serif", d
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
-  title: { default: "IIUI Student Desk — Your study space", template: "%s · IIUI Student Desk" },
-  description: "Find notes, past papers and course resources for your IIUI degree, or share the material that helped you.",
+  title: { default: "IIUI Student Desk — Your next semester, sorted", template: "%s · IIUI Student Desk" },
+  description: "Explore the IIUI faculty atlas, find course resources, plan your CGPA and build a better study rhythm with tools made for students.",
   applicationName: "IIUI Student Desk",
-  openGraph: { title: "IIUI Student Desk", description: "A shared study space for the IIUI community.", type: "website" },
+  openGraph: { title: "IIUI Student Desk — Your next semester, sorted", description: "IIUI course resources, a faculty atlas and useful tools for university life.", type: "website" },
 };
 
 export const viewport: Viewport = {
@@ -22,6 +21,5 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en"><body className={`${sans.variable} ${serif.variable}`}><div className="announcement"><span className="announcement-dot" />A better study space, built by students for students<Link className="announcement-link" href="/faculties">Explore faculties <span aria-hidden="true">↗</span></Link></div><SiteHeader /><main>{children}</main><SiteFooter /></body></html>;
+  return <html lang="en"><body className={`${sans.variable} ${serif.variable}`}><div className="announcement"><span className="announcement-dot" />A student powered index of IIUI</div><SiteHeader /><main>{children}</main><SiteFooter /></body></html>;
 }
-

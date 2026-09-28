@@ -14,4 +14,3 @@ export const resourceMetadataSchema = z.object({
 });
 
 export type ResourceMetadata = z.infer<typeof resourceMetadataSchema>;
-

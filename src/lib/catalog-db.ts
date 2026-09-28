@@ -32,4 +32,3 @@ export async function getFacultyDegrees(facultySlug: string): Promise<CatalogDeg
   }
   return [...grouped.values()];
 }
-

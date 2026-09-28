@@ -1,57 +1,41 @@
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowRight, ArrowUpRight, BookOpenCheck, FileUp, GraduationCap, Search, Share2, Sparkles } from "lucide-react";
-import { FacultyCard } from "@/components/faculty-card";
-import { Reveal } from "@/components/reveal";
+import { ArrowRight, ArrowUpRight, BookOpen, Calculator, FileUp, Orbit, Search, ShieldCheck, Sparkles } from "lucide-react";
+import type { CSSProperties } from "react";
 import { faculties } from "@/lib/catalog";
 import { findApprovedResources, getApprovedResourceCount } from "@/lib/resources";
 import { ResourceCard } from "@/components/resource-card";
+import { SearchHotkey } from "@/components/search-hotkey";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const [count, latest] = await Promise.all([getApprovedResourceCount(), findApprovedResources("", undefined, 3)]);
+  return <>
+    <SearchHotkey targetId="desk-search" />
+    <section className="launch-hero">
+      <div className="launch-grid" aria-hidden="true" />
+      <div className="hero-orbit orbit-a" aria-hidden="true" /><div className="hero-orbit orbit-b" aria-hidden="true" />
+      <div className="launch-main"><div className="eyebrow"><span className="pulse-dot" /> THE STUDENT-POWERED CAMPUS INDEX</div><h1>Your next<br />semester, <em>sorted.</em></h1><p className="launch-lede">Past papers, course notes and the little tools that make university life easier — mapped to your IIUI degree and shared by people who’ve been there.</p>
+        <form className="launch-search" action="/resources" method="get"><Search size={19} /><input id="desk-search" name="q" aria-label="Search courses or resources" placeholder="Search a course code, topic, or resource…" /><kbd><span>⌘</span> K</kbd><button aria-label="Search"><ArrowRight size={17} /></button></form>
+        <div className="launch-actions"><Link className="action-primary" href="/faculties">Explore the faculty atlas <ArrowUpRight size={15} /></Link><Link className="action-quiet" href="/upload"><FileUp size={15} /> Share what helped you</Link></div>
+      </div>
+      <div className="hero-console" aria-label="University at a glance">
+        <div className="console-head"><span><span className="console-led" /> DESK / ISB</span><span>H-10 · PAKISTAN</span></div>
+        <div className="console-art"><div className="radar-ring ring-1"/><div className="radar-ring ring-2"/><div className="radar-ring ring-3"/><Orbit className="console-orbit-icon" size={82} strokeWidth={0.8}/><span className="coord coord-nw">33°41' N</span><span className="coord coord-se">73°03' E</span><span className="console-star">✳</span><span className="console-seal">IIU<br/><small>STUDENT<br/>DESK</small></span></div>
+        <div className="console-stats"><div><strong>11</strong><span>FACULTIES</span></div><div><strong>{String(count).padStart(2, "0")}</strong><span>REVIEWED FILES</span></div><div><strong>01</strong><span>COMMUNITY</span></div></div>
+        <div className="console-foot"><span>KNOWLEDGE IS A SHARED JOURNEY</span><span className="console-live">● LIVE INDEX</span></div>
+      </div>
+      <div className="hero-scroll">SCROLL TO EXPLORE <span /></div>
+    </section>
 
-  return (
-    <>
-      <section className="hero">
-        <div className="hero-copy">
-          <div className="eyebrow"><span className="eyebrow-line" /> YOUR IIUI STUDY SPACE</div>
-          <h1>Good notes make<br />great <em>beginnings.</em></h1>
-          <p className="hero-lede">Find the notes, past papers and course materials your degree needs — gathered in one place by the people who know it best.</p>
-          <form className="search-box" action="/resources" method="get">
-            <Search className="search-icon" size={20} aria-hidden="true" />
-            <label className="sr-only" htmlFor="home-search">Search courses and study resources</label>
-            <input id="home-search" type="search" name="q" placeholder="Search a course, subject or resource…" autoComplete="off" />
-            <button type="submit">Search <ArrowRight size={15} /></button>
-          </form>
-          <div className="hero-meta"><div className="avatar-stack" aria-hidden="true"><span>II</span><span>U</span><span>I</span><span>✳</span></div><span>Shared by IIUI students, for IIUI students</span></div>
-        </div>
-        <div className="hero-art" aria-label="IIUI emblem surrounded by geometric patterns">
-          <div className="orbit orbit-one" /><div className="orbit orbit-two" />
-          <div className="hero-seal"><span className="seal-top">SEEK KNOWLEDGE</span><Image src="/images/logo.png" alt="IIUI university seal" width={116} height={116} priority /><span className="seal-bottom">SHARE WISDOM</span></div>
-          <div className="floating-note note-top"><span className="note-icon gold"><Sparkles size={15} /></span><span className="floating-note-copy"><strong>Learn together</strong><small>Every semester, every step</small></span></div>
-          <div className="floating-note note-bottom"><span className="note-icon mint"><ArrowUpRight size={15} /></span><span className="floating-note-copy"><strong>Your next great find</strong><small>Could be one search away</small></span></div>
-          <span className="sparkle sparkle-a">✳</span><span className="sparkle sparkle-b">✧</span>
-        </div>
-        <div className="hero-foot"><span>H-10, ISLAMABAD</span><span className="hero-foot-rule" /><span>KNOWLEDGE GROWS WHEN IT'S SHARED</span></div>
-      </section>
+    <section className="welcome-rail"><span className="rail-mark">IIUI <i>✳</i> STUDENT DESK</span><p>Built around <strong>your courses</strong>, made better by <strong>your community.</strong></p><Link href="/about">OUR APPROACH <ArrowUpRight size={12} /></Link></section>
 
-      <section className="welcome-strip"><div><span className="strip-kicker">A NOTE FROM YOUR DESK</span><p>One university. Many paths. <strong>Find yours.</strong></p></div><div className="strip-stats"><div><strong>{faculties.length.toString().padStart(2, "0")}</strong><span>faculties to explore</span></div><i /><div><strong>{count}</strong><span>shared resources</span></div></div></section>
+    <section className="atlas-teaser section-pad"><div className="section-heading"><div><span className="section-kicker">01 / YOUR STARTING POINT</span><h2>Pick a faculty.<br />Find your <em>people.</em></h2><p>IIUI’s official academic faculties, reimagined as a map into your study materials.</p></div><Link className="text-link" href="/faculties">Open full atlas <ArrowUpRight size={14}/></Link></div><div className="faculty-grid home-faculty-grid">{faculties.slice(0, 6).map((faculty, index) => <Link href={`/faculties/${faculty.slug}`} className="faculty-card" key={faculty.slug} style={{ "--card-index": index } as CSSProperties}><span className="faculty-card-top"><span>{faculty.code}</span><ArrowUpRight size={17}/></span><span className="faculty-glyph" aria-hidden="true">{faculty.glyph}</span><span className="faculty-card-copy"><span className="faculty-card-field">{faculty.field}</span><strong>{faculty.short}</strong><span className="faculty-count">{String(faculty.departments.length).padStart(2,"0")} STUDY AREAS <ArrowUpRight size={12}/></span></span><span className="faculty-index">{faculty.number}</span></Link>)}</div></section>
 
-      <section className="section-block faculty-section" id="faculties">
-        <Reveal><div className="section-heading"><div><div className="eyebrow"><span className="eyebrow-line" /> FIND YOUR FIELD</div><h2>A home for every <em>discipline.</em></h2><p>Explore your faculty, then find your programme, semester and courses.</p></div><Link className="text-link" href="/faculties">Browse all faculties <span>↗</span></Link></div></Reveal>
-        <div className="faculty-grid">{faculties.map((faculty, index) => <Reveal key={faculty.slug} delay={(index % 3) * 0.07}><FacultyCard faculty={faculty} index={index} /></Reveal>)}</div>
-      </section>
+    <section className="tool-banner"><div className="tool-stamp"><Calculator size={24}/><span>STUDENT<br/>TOOLS</span></div><div><span className="section-kicker">02 / MAKE A PLAN</span><h2>Study life has a<br /><em>control room.</em></h2><p>Calculate a target CGPA, keep a focus sprint, and build a rhythm that works for you.</p></div><div className="tool-links"><Link href="/tools"><span><Calculator size={18}/><strong>CGPA planner</strong><small>Try semester scenarios</small></span><ArrowUpRight size={15}/></Link><Link href="/tools#focus"><span><Sparkles size={18}/><strong>Focus timer</strong><small>Start a study sprint</small></span><ArrowUpRight size={15}/></Link></div><div className="tool-lines" aria-hidden="true">✳</div></section>
 
-      <Reveal><section className="contribute-band"><div className="contribute-mark"><Share2 size={24} /></div><div className="contribute-copy"><span className="strip-kicker">GOOD KARMA, ACADEMIC EDITION</span><h2>Have something that helped <em>you?</em></h2><p>Pass it on. Your notes could be the thing that makes someone else's semester click.</p></div><Link href="/upload" className="button-light">Share a resource <span>↗</span></Link><div className="band-pattern" aria-hidden="true">✳ ✧ ✳ ✧ ✳</div></section></Reveal>
+    <section className="library-preview section-pad"><div className="section-heading"><div><span className="section-kicker">03 / THE COMMUNITY LIBRARY</span><h2>What helped<br />someone <em>click.</em></h2><p>Student-contributed resources, reviewed before they join the shared library.</p></div><Link className="text-link" href="/resources">Browse library <ArrowUpRight size={14}/></Link></div><div className="resource-grid">{latest.length ? latest.map((resource) => <ResourceCard key={resource.id} resource={resource}/>) : <div className="library-empty"><span className="empty-icon"><BookOpen size={24}/></span><div><h3>A useful library starts with one good share.</h3><p>Share your first notes, past paper or study guide. A moderator reviews the resource details before other students find it.</p><Link href="/upload" className="action-primary">Share a resource <ArrowRight size={14}/></Link></div><span className="empty-shield"><ShieldCheck size={28}/><small>REVIEWED<br/>BY PEOPLE</small></span></div>}</div></section>
 
-      <section className="section-block library-section"><Reveal><div className="section-heading"><div><div className="eyebrow"><span className="eyebrow-line" /> THE SHARED LIBRARY</div><h2>Little things that make<br />a big <em>difference.</em></h2><p>Community-contributed resources, reviewed and ready to help.</p></div><Link className="text-link" href="/resources">Open the library <span>↗</span></Link></div></Reveal>
-        <div className="resource-grid">{latest.length ? latest.map((resource) => <ResourceCard key={resource.id} resource={resource} />) : <div className="empty-state"><span><BookOpenCheck size={25} /></span><h3>The library starts with us.</h3><p>There aren’t any reviewed resources here yet. Share a study guide, lecture notes or past paper to give the first student a head start.</p><Link href="/upload" className="button-green">Contribute the first resource <ArrowRight size={15} /></Link></div>}</div>
-      </section>
-
-      <section className="section-block values-section"><Reveal><div className="section-heading"><div><div className="eyebrow"><span className="eyebrow-line" /> THE STUDENT DESK PROMISE</div><h2>Study smarter, <em>together.</em></h2></div></div></Reveal><div className="value-grid"><Reveal delay={0.02}><article className="value-item"><span className="value-number">01</span><GraduationCap className="value-icon" size={20} /><h3>Find what fits</h3><p>Browse resources through your faculty, degree, semester and course.</p></article></Reveal><Reveal delay={0.09}><article className="value-item"><span className="value-number">02</span><Share2 className="value-icon" size={18} /><h3>Pass it forward</h3><p>A student's clear notes can save another student hours of searching.</p></article></Reveal><Reveal delay={0.16}><article className="value-item"><span className="value-number">03</span><FileUp className="value-icon" size={19} /><h3>Share with care</h3><p>Resources are reviewed before they join the shared library.</p></article></Reveal></div></section>
-    </>
-  );
+    <section className="end-note"><span className="section-kicker">THE IDEA IS SIMPLE</span><p>One university.<br /><em>Better connected.</em></p><Link href="/faculties">Find your path <ArrowRight size={15}/></Link><div className="end-pattern">۞</div></section>
+  </>;
 }
-

@@ -31,4 +31,3 @@ export function ContactForm() {
     <button className="button-green" type="submit" disabled={pending}>{pending ? <><LoaderCircle size={15} className="spin" /> Sending…</> : <>Send your note <ArrowRight size={15} /></>}</button>
   </form>;
 }
-

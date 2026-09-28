@@ -12,4 +12,3 @@ export function getDatabase() {
   database ??= drizzle(pool, { schema });
   return database;
 }
-

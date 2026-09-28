@@ -36,9 +36,9 @@ async function saveResource(metadata: unknown, uploaderId: string, blob: { pathn
     slug: faculty.slug,
     name: faculty.name,
     description: faculty.description,
-    imagePath: faculty.image,
+    imagePath: "/images/academic-atlas.svg",
     sortOrder: 0,
-  }).onConflictDoUpdate({ target: faculties.slug, set: { name: faculty.name, description: faculty.description, imagePath: faculty.image } }).returning({ id: faculties.id });
+  }).onConflictDoUpdate({ target: faculties.slug, set: { name: faculty.name, description: faculty.description, imagePath: "/images/academic-atlas.svg" } }).returning({ id: faculties.id });
 
   const degreeSlug = slugify(parsed.degreeName);
   const [degreeRow] = await db.insert(degrees).values({ facultyId: facultyRow.id, slug: degreeSlug, code: null, name: parsed.degreeName, level: parsed.degreeLevel })
@@ -96,4 +96,3 @@ export async function POST(request: Request) {
     return Response.json({ error: message }, { status: 400 });
   }
 }
-
