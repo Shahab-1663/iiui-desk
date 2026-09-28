@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, Plus, X, Wrench } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
 const links = [
@@ -39,6 +39,15 @@ export function SiteHeader() {
 
 function AuthActions({ closeMenu }: { closeMenu: () => void }) {
   const { data: session } = authClient.useSession();
-  if (session?.user) return <><Link className="nav-link admin-nav" href="/admin" onClick={closeMenu}><Wrench size={13} /> Desk admin</Link><button className="nav-signin" onClick={() => void authClient.signOut()} type="button">Sign out</button></>;
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+    let live = true;
+    if (!session?.user) { setIsAdmin(false); return () => { live = false; }; }
+    fetch("/api/admin/access", { cache: "no-store" }).then((response) => response.ok ? response.json() as Promise<{ isAdmin: boolean }> : { isAdmin: false })
+      .then((data) => { if (live) setIsAdmin(data.isAdmin); })
+      .catch(() => { if (live) setIsAdmin(false); });
+    return () => { live = false; };
+  }, [session?.user?.id]);
+  if (session?.user) return <>{isAdmin && <Link className="nav-link admin-nav" href="/admin" onClick={closeMenu}><Wrench size={13} /> Desk admin</Link>}<button className="nav-signin" onClick={() => void authClient.signOut()} type="button">Sign out</button></>;
   return <Link className="nav-signin" href="/auth/sign-in" onClick={closeMenu}>Sign in <span aria-hidden="true">↗</span></Link>;
 }

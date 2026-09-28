@@ -3,10 +3,10 @@
 import { upload } from "@vercel/blob/client";
 import { ArrowRight, Check, FileUp, LoaderCircle, UploadCloud } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { faculties } from "@/lib/catalog";
 import { resourceMetadataSchema, type ResourceMetadata } from "@/lib/validators";
+import type { DirectoryFaculty } from "@/lib/catalog-db";
 
-const empty: ResourceMetadata = { facultySlug: "computing", degreeName: "", degreeLevel: "Undergraduate", courseCode: "", courseName: "", semester: 1, kind: "notes", title: "", description: "" };
+const empty: ResourceMetadata = { facultySlug: "computing", departmentSlug: "", degreeName: "", degreeLevel: "Undergraduate", courseCode: "", courseName: "", semester: 1, kind: "notes", title: "", description: "" };
 
 const facultyHints: Array<{ slug: string; match: RegExp }> = [
   { slug: "computing", match: /computer|program|algorithm|software|data.?structure|bscs|bs.?cs|bsit|bs.?it|cs\b|se\b|it\b/i },
@@ -23,9 +23,12 @@ const facultyHints: Array<{ slug: string; match: RegExp }> = [
 ];
 
 type DegreeOption = { id: string; name: string; level: string; slug: string; courses: Array<{ code: string; name: string; semester: number }> };
+type DepartmentOption = { slug: string; name: string };
 
-export function UploadForm({ initialFaculty }: { initialFaculty?: string }) {
+export function UploadForm({ initialFaculty, initialDepartment }: { initialFaculty?: string; initialDepartment?: string }) {
   const [values, setValues] = useState<ResourceMetadata>({ ...empty, ...(initialFaculty ? { facultySlug: initialFaculty } : {}) });
+  const [facultyOptions, setFacultyOptions] = useState<Array<Pick<DirectoryFaculty, "slug" | "name" | "short">>>([]);
+  const [departments, setDepartments] = useState<DepartmentOption[]>([]);
   const [file, setFile] = useState<File>();
   const [degrees, setDegrees] = useState<DegreeOption[]>([]);
   const [busy, setBusy] = useState(false);
@@ -37,9 +40,15 @@ export function UploadForm({ initialFaculty }: { initialFaculty?: string }) {
 
   useEffect(() => {
     let live = true;
-    fetch(`/api/catalog?faculty=${encodeURIComponent(values.facultySlug)}`).then((response) => response.ok ? response.json() as Promise<{ degrees: DegreeOption[] }> : { degrees: [] }).then((data) => { if (live) setDegrees(data.degrees); }).catch(() => { if (live) setDegrees([]); });
+    fetch(`/api/catalog?faculty=${encodeURIComponent(values.facultySlug)}`).then((response) => response.ok ? response.json() as Promise<{ faculties: Array<Pick<DirectoryFaculty, "slug" | "name" | "short">>; departments: DepartmentOption[]; degrees: DegreeOption[] }> : { faculties: [], departments: [], degrees: [] }).then((data) => {
+      if (!live) return;
+      setFacultyOptions(data.faculties);
+      setDepartments(data.departments);
+      setDegrees(data.degrees);
+      setValues((previous) => ({ ...previous, departmentSlug: data.departments.some((department) => department.slug === (initialDepartment ?? previous.departmentSlug)) ? (initialDepartment ?? previous.departmentSlug) : data.departments[0]?.slug ?? "" }));
+    }).catch(() => { if (live) { setDegrees([]); setDepartments([]); setFacultyOptions([]); } });
     return () => { live = false; };
-  }, [values.facultySlug]);
+  }, [values.facultySlug, initialDepartment]);
 
   function set<K extends keyof ResourceMetadata>(key: K, value: ResourceMetadata[K]) {
     setValues((previous) => ({ ...previous, [key]: value }));
@@ -91,7 +100,8 @@ export function UploadForm({ initialFaculty }: { initialFaculty?: string }) {
 
   return <form className="upload-form" onSubmit={submit}>
     <div className="form-title"><div><span className="strip-kicker">RESOURCE DETAILS</span><h2>Share something <em>good.</em></h2></div><span className="step-mark">01 <i>—</i> 02</span></div>
-    <div className="form-two"><label>Faculty<select value={values.facultySlug} onChange={(event) => set("facultySlug", event.target.value)} required>{faculties.map((faculty) => <option key={faculty.slug} value={faculty.slug}>{faculty.name}</option>)}</select></label><label>Degree level<select value={values.degreeLevel} onChange={(event) => set("degreeLevel", event.target.value as ResourceMetadata["degreeLevel"])}><option>Undergraduate</option><option>Graduate</option><option>Doctoral</option><option>Other</option></select></label></div>
+    <div className="form-two"><label>Faculty<select value={values.facultySlug} onChange={(event) => { set("facultySlug", event.target.value); set("departmentSlug", ""); }} required>{facultyOptions.map((faculty) => <option key={faculty.slug} value={faculty.slug}>{faculty.name}</option>)}</select></label><label>Department<select value={values.departmentSlug} onChange={(event) => set("departmentSlug", event.target.value)} required disabled={!departments.length}><option value="">Choose department</option>{departments.map((department) => <option key={department.slug} value={department.slug}>{department.name}</option>)}</select></label></div>
+    <label>Degree level<select value={values.degreeLevel} onChange={(event) => set("degreeLevel", event.target.value as ResourceMetadata["degreeLevel"])}><option>Undergraduate</option><option>Graduate</option><option>Doctoral</option><option>Other</option></select></label>
     <label>Degree or programme<input list="degree-options" value={values.degreeName} onChange={(event) => set("degreeName", event.target.value)} placeholder="Choose or enter your programme" required /><datalist id="degree-options">{degrees.map((degree) => <option key={degree.id} value={degree.name} />)}</datalist><small className="field-hint">Start typing to match programmes students have added.</small></label>
     <div className="form-two"><label>Course code<input list="course-options" value={values.courseCode} onChange={(event) => set("courseCode", event.target.value)} placeholder="e.g. CS-220" required /><datalist id="course-options">{courseOptions.map((course) => <option key={course.code} value={course.code}>{course.name}</option>)}</datalist></label><label>Semester<select value={values.semester} onChange={(event) => set("semester", Number(event.target.value))}>{Array.from({ length: 16 }, (_, index) => <option key={index + 1} value={index + 1}>Semester {index + 1}</option>)}</select></label></div>
     <label>Course or subject<input value={values.courseName} onChange={(event) => set("courseName", event.target.value)} placeholder="e.g. Data Structures" required /></label>

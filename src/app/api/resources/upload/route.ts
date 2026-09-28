@@ -1,8 +1,8 @@
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
+import { and, eq } from "drizzle-orm";
 import { getAuth } from "@/lib/auth";
 import { getDatabase } from "@/db";
-import { courses, degrees, faculties, resources } from "@/db/schema";
-import { getFaculty } from "@/lib/catalog";
+import { courses, degrees, departments, faculties, resources } from "@/db/schema";
 import { resourceMetadataSchema } from "@/lib/validators";
 
 export const runtime = "nodejs";
@@ -25,20 +25,16 @@ function slugify(value: string) {
 
 async function saveResource(metadata: unknown, uploaderId: string, blob: { pathname: string; url: string; contentType?: string | null; size?: number }) {
   const parsed = resourceMetadataSchema.parse(metadata);
-  const faculty = getFaculty(parsed.facultySlug);
-  if (!faculty) throw new Error("That faculty is no longer available.");
   const contentType = blob.contentType ?? "application/octet-stream";
   if (!allowedContentTypes.includes(contentType)) throw new Error("This file type is not supported.");
   if (blob.size !== undefined && blob.size > 20 * 1024 * 1024) throw new Error("Files must be 20 MB or smaller.");
 
   const db = getDatabase();
-  const [facultyRow] = await db.insert(faculties).values({
-    slug: faculty.slug,
-    name: faculty.name,
-    description: faculty.description,
-    imagePath: "/images/academic-atlas.svg",
-    sortOrder: 0,
-  }).onConflictDoUpdate({ target: faculties.slug, set: { name: faculty.name, description: faculty.description, imagePath: "/images/academic-atlas.svg" } }).returning({ id: faculties.id });
+  const [facultyRow] = await db.select({ id: faculties.id }).from(faculties).where(eq(faculties.slug, parsed.facultySlug)).limit(1);
+  if (!facultyRow) throw new Error("That faculty is no longer available.");
+  const [departmentRow] = await db.select({ id: departments.id }).from(departments)
+    .where(and(eq(departments.facultyId, facultyRow.id), eq(departments.slug, parsed.departmentSlug))).limit(1);
+  if (!departmentRow) throw new Error("Choose a department belonging to the selected faculty.");
 
   const degreeSlug = slugify(parsed.degreeName);
   const [degreeRow] = await db.insert(degrees).values({ facultyId: facultyRow.id, slug: degreeSlug, code: null, name: parsed.degreeName, level: parsed.degreeLevel })
@@ -51,6 +47,7 @@ async function saveResource(metadata: unknown, uploaderId: string, blob: { pathn
 
   await db.insert(resources).values({
     courseId: courseRow.id,
+    departmentId: departmentRow.id,
     uploadedBy: uploaderId,
     kind: parsed.kind,
     title: parsed.title,

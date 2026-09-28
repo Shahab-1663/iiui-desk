@@ -71,6 +71,18 @@ export const faculties = pgTable("faculty", {
   ...timestamps,
 });
 
+export const departments = pgTable("department", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  facultyId: uuid("faculty_id").notNull().references(() => faculties.id, { onDelete: "cascade" }),
+  slug: varchar("slug", { length: 100 }).notNull(),
+  name: varchar("name", { length: 180 }).notNull(),
+  sortOrder: integer("sort_order").default(0).notNull(),
+  ...timestamps,
+}, (table) => [
+  uniqueIndex("department_faculty_slug_idx").on(table.facultyId, table.slug),
+  index("department_faculty_order_idx").on(table.facultyId, table.sortOrder),
+]);
+
 export const degrees = pgTable("degree", {
   id: uuid("id").defaultRandom().primaryKey(),
   facultyId: uuid("faculty_id").notNull().references(() => faculties.id, { onDelete: "cascade" }),
@@ -93,6 +105,7 @@ export const courses = pgTable("course", {
 export const resources = pgTable("resource", {
   id: uuid("id").defaultRandom().primaryKey(),
   courseId: uuid("course_id").notNull().references(() => courses.id, { onDelete: "cascade" }),
+  departmentId: uuid("department_id").references(() => departments.id, { onDelete: "set null" }),
   uploadedBy: text("uploaded_by").notNull().references(() => users.id, { onDelete: "restrict" }),
   kind: resourceKind("kind").notNull(),
   status: resourceStatus("status").default("pending").notNull(),
@@ -107,6 +120,7 @@ export const resources = pgTable("resource", {
   ...timestamps,
 }, (table) => [
   index("resource_course_status_idx").on(table.courseId, table.status),
+  index("resource_department_status_idx").on(table.departmentId, table.status),
   index("resource_status_created_idx").on(table.status, table.createdAt),
   index("resource_uploader_idx").on(table.uploadedBy),
 ]);

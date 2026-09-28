@@ -1,6 +1,6 @@
 import { and, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { getDatabase } from "@/db";
-import { courses, degrees, faculties, resources } from "@/db/schema";
+import { courses, degrees, departments, faculties, resources } from "@/db/schema";
 
 export type ResourceItem = {
   id: string;
@@ -18,9 +18,10 @@ export type ResourceItem = {
   degreeName: string;
   facultyName: string;
   facultySlug: string;
+  departmentName: string | null;
 };
 
-export async function findApprovedResources(query = "", facultySlug?: string, limit = 30): Promise<ResourceItem[]> {
+export async function findApprovedResources(query = "", facultySlug?: string, limit = 30, departmentSlug?: string): Promise<ResourceItem[]> {
   if (!process.env.DATABASE_URL) return [];
   const db = getDatabase();
   const conditions = [eq(resources.status, "approved")];
@@ -37,6 +38,7 @@ export async function findApprovedResources(query = "", facultySlug?: string, li
     )!);
   }
   if (facultySlug) conditions.push(eq(faculties.slug, facultySlug));
+  if (departmentSlug) conditions.push(eq(departments.slug, departmentSlug));
 
   return db.select({
     id: resources.id,
@@ -54,11 +56,13 @@ export async function findApprovedResources(query = "", facultySlug?: string, li
     degreeName: degrees.name,
     facultyName: faculties.name,
     facultySlug: faculties.slug,
+    departmentName: departments.name,
   })
     .from(resources)
     .innerJoin(courses, eq(resources.courseId, courses.id))
     .innerJoin(degrees, eq(courses.degreeId, degrees.id))
     .innerJoin(faculties, eq(degrees.facultyId, faculties.id))
+    .leftJoin(departments, eq(resources.departmentId, departments.id))
     .where(and(...conditions))
     .orderBy(desc(resources.createdAt))
     .limit(limit);

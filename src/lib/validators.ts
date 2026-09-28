@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { faculties } from "@/lib/catalog";
 
 export const resourceMetadataSchema = z.object({
-  facultySlug: z.enum(faculties.map((faculty) => faculty.slug) as [string, ...string[]]),
+  facultySlug: z.string().trim().min(2).max(80).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  departmentSlug: z.string().trim().min(2).max(100).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   degreeName: z.string().trim().min(2).max(140),
   degreeLevel: z.enum(["Undergraduate", "Graduate", "Doctoral", "Other"]),
   courseCode: z.string().trim().min(2).max(32),

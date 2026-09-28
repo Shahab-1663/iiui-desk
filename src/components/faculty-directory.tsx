@@ -4,9 +4,10 @@ import { useMemo, useState } from "react";
 import { Search, ArrowUpRight, Landmark } from "lucide-react";
 import { FacultyCard } from "@/components/faculty-card";
 import { SearchHotkey } from "@/components/search-hotkey";
-import type { academicInstitutes, faculties } from "@/lib/catalog";
+import type { academicInstitutes } from "@/lib/catalog";
+import type { DirectoryFaculty } from "@/lib/catalog-db";
 
-export function FacultyDirectory({ faculties: items, institutes }: { faculties: typeof faculties; institutes: typeof academicInstitutes }) {
+export function FacultyDirectory({ faculties: items, institutes }: { faculties: DirectoryFaculty[]; institutes: typeof academicInstitutes }) {
   const [query, setQuery] = useState("");
   const filtered = useMemo(() => {
     const term = query.trim().toLowerCase();

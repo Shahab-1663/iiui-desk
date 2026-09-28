@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 import type { CSSProperties } from "react";
-import type { Faculty } from "@/lib/catalog";
+import type { DirectoryFaculty } from "@/lib/catalog-db";
 
-export function FacultyCard({ faculty, index = Number(faculty.number) - 1 }: { faculty: Faculty; index?: number }) {
+export function FacultyCard({ faculty, index = Number(faculty.number) - 1 }: { faculty: DirectoryFaculty; index?: number }) {
   return <Link href={`/faculties/${faculty.slug}`} className="faculty-card" style={{ "--card-index": index } as CSSProperties}>
     <span className="faculty-card-top"><span>{faculty.code}</span><ArrowUpRight size={17} /></span>
     <span className="faculty-glyph" aria-hidden="true">{faculty.glyph}</span>

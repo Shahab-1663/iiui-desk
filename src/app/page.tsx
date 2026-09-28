@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight, BookOpen, Calculator, FileUp, Orbit, Search, ShieldCheck, Sparkles } from "lucide-react";
 import type { CSSProperties } from "react";
-import { faculties } from "@/lib/catalog";
+import { getFacultyDirectory } from "@/lib/catalog-db";
 import { findApprovedResources, getApprovedResourceCount } from "@/lib/resources";
 import { ResourceCard } from "@/components/resource-card";
 import { SearchHotkey } from "@/components/search-hotkey";
@@ -9,7 +9,7 @@ import { SearchHotkey } from "@/components/search-hotkey";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [count, latest] = await Promise.all([getApprovedResourceCount(), findApprovedResources("", undefined, 3)]);
+  const [count, latest, faculties] = await Promise.all([getApprovedResourceCount(), findApprovedResources("", undefined, 3), getFacultyDirectory()]);
   return <>
     <SearchHotkey targetId="desk-search" />
     <section className="launch-hero">
@@ -22,7 +22,7 @@ export default async function HomePage() {
       <div className="hero-console" aria-label="University at a glance">
         <div className="console-head"><span><span className="console-led" /> DESK / ISB</span><span>H-10 · PAKISTAN</span></div>
         <div className="console-art"><div className="radar-ring ring-1"/><div className="radar-ring ring-2"/><div className="radar-ring ring-3"/><Orbit className="console-orbit-icon" size={82} strokeWidth={0.8}/><span className="coord coord-nw">33°41' N</span><span className="coord coord-se">73°03' E</span><span className="console-star">✳</span><span className="console-seal">IIU<br/><small>STUDENT<br/>DESK</small></span></div>
-        <div className="console-stats"><div><strong>11</strong><span>FACULTIES</span></div><div><strong>{String(count).padStart(2, "0")}</strong><span>REVIEWED FILES</span></div><div><strong>01</strong><span>COMMUNITY</span></div></div>
+        <div className="console-stats"><div><strong>{String(faculties.length).padStart(2,"0")}</strong><span>FACULTIES</span></div><div><strong>{String(count).padStart(2, "0")}</strong><span>REVIEWED FILES</span></div><div><strong>01</strong><span>COMMUNITY</span></div></div>
         <div className="console-foot"><span>KNOWLEDGE IS A SHARED JOURNEY</span><span className="console-live">● LIVE INDEX</span></div>
       </div>
       <div className="hero-scroll">SCROLL TO EXPLORE <span /></div>
