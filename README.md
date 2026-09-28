@@ -30,4 +30,3 @@ The faculty directory follows the official IIUI faculties listing. Course record
 ## Deployment
 
 Deploy the project root as a Next.js app on Vercel. Provision Prisma Postgres from the Vercel Marketplace and connect it to the project; the integration provides `DATABASE_URL`. Run the database migration against that database, create a private Blob store, and configure the remaining variables from `.env.example`. Never commit `.env.local` or provider tokens.
-
